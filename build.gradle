@@ -1,41 +1,105 @@
-apply plugin: 'application'
-apply plugin: 'osgi'
-apply plugin: 'war'
-apply plugin: 'eclipse'
+plugins {
+    id 'biz.aQute.bnd.builder' version '3.3.0'
+}
 
 sourceCompatibility = '1.8'
-version = '0.1'
-
+version = '0.2'
 
 repositories {
-	maven {
-        url "http://repo.dotcms.com/artifactory/libs-release"
-    }
+    maven { url "http://repo.dotcms.com/artifactory/libs-release" }
 }
+
 dependencies {
-	compile fileTree(dir: 'src/main/resources/libs', include: '*.jar')
-	compile (group: 'com.dotcms', name: 'dotcms', version: '3.6.0'){
-		transitive = true
-	}
-	providedCompile "javax.servlet:javax.servlet-api:3.0.1"
-	providedCompile 'org.apache.tomcat:tomcat-catalina:8.0.18'
-
+    compile('com.dotcms:dotcms:5.2.0')
+    compile 'org.apache.tomcat:tomcat-catalina:8.5.24'
+    compile "javax.servlet:javax.servlet-api:3.0.1"
+    compile 'org.apache.tomcat:tomcat-catalina:8.0.18'
 }
 
+import java.util.jar.*
+
+/////////////////////////
+//Plugin jar
+/////////////////////////
 jar {
     manifest {
-        name = 'Osgi Servlet'
-        instruction 'Bundle-Vendor', 'dotcms'
-        instruction 'Bundle-Description', 'dotCMS Osgi Servlet example'
-        instruction 'Bundle-DocURL', 'https://dotcms.com'
-        instruction 'Bundle-Activator', 'com.dotmarketing.osgi.servlet.Activator'
-        instruction 'DynamicImport-Package', '*'
-        instruction 'Import-Package', '*;version=0'
-        instruction 'Override-Classes', 'com.dotmarketing.osgi.servlet.HelloWorldServlet,com.dotmarketing.osgi.servlet.HelloWorldFilter'
+        attributes (
+                'Bundle-Vendor': 'dotCMS',
+                'Bundle-Description': 'dotCMS - Osgi Servlet example',
+                'Bundle-DocURL': 'https://dotcms.com/',
+                'Bundle-Activator': 'com.dotmarketing.osgi.servlet.Activator',
+                'Import-Package': '*;version=0'
+        )
     }
 }
+jar.finalizedBy 'fragmentJar'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+/////////////////////////
+//Fragment jar
+/////////////////////////
+
+ext {
+    bundleName = "Osgi Servlet example fragment"
+    bundleDescription = "dotCMS - Osgi Servlet example fragment"
+    fragmentHost = "system.bundle; extension:=framework"
+    bundleSymbolicName = "" //Auto generated based on the plugin jar
+    bundleVersion = "" //Auto generated based on the plugin jar
+    importPackage = "" //Auto generated based on the plugin jar
+    bundleManifestVersion = "" //Auto generated based on the plugin jar
+    bundleDocURL = "" //Auto generated based on the plugin jar
+    bundleVendor = "" //Auto generated based on the plugin jar
+}
+/**
+ * The import generates versions like this: version="[1.8,2)"
+ * That format does not work for the export, so we need to replace it
+ * to: version=0
+ */
+ext.fixVersionNumber = {importValue ->
+    return importValue.replaceAll("\"\\[[0-9.,]+\\)\"", "0")
 }
 
+/**
+ * Reads the Manifest file of the just created plugin jar in order to get the required info
+ * to automatically create the fragment jar.
+ */
+task readManifesttAttributes {
+    doFirst {
+        File file = configurations.baseline.singleFile
+        JarFile jar = new JarFile(file)
+        Attributes manifest = jar.getManifest().getMainAttributes()
+        bundleSymbolicName = "${manifest.getValue('Bundle-SymbolicName')}"
+        bundleVersion = "${manifest.getValue('Bundle-Version')}"
+        importPackage = "${manifest.getValue('Import-Package')}"
+        bundleManifestVersion = "${manifest.getValue('Bundle-ManifestVersion')}"
+        bundleDocURL = "${manifest.getValue('Bundle-DocURL')}"
+        bundleVendor = "${manifest.getValue('Bundle-Vendor')}"
+    }
+}
+task fragmentJar(type: Jar) {
+
+    doFirst {
+        //Setting the fragment jar name
+        baseName = project.name
+        archiveName = "${baseName}.fragment-${version}.jar"
+        importPackage = fixVersionNumber(importPackage)
+
+        manifest {
+            attributes (
+                    'Bundle-Name': "${bundleName}",
+                    'Bundle-Description': "${bundleDescription}",
+                    'Bundle-Vendor': "${bundleVendor}",
+                    'Bundle-Version': "${version}",
+                    'Bundle-SymbolicName': "${baseName}.fragment",
+                    'Bundle-ManifestVersion': "${bundleManifestVersion}",
+                    'Bundle-DocURL': "${bundleDocURL}",
+                    'Fragment-Host': "${fragmentHost}",
+                    'Export-Package': "${importPackage}"
+            )
+        }
+    }
+}
+fragmentJar.dependsOn 'readManifesttAttributes'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2'
+}

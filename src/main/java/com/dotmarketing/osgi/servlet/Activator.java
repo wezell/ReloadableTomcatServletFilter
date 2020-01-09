@@ -2,7 +2,7 @@ package com.dotmarketing.osgi.servlet;
 
 
 
-import com.dotcms.repackage.org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleContext;
 import com.dotmarketing.osgi.GenericBundleActivator;
 
 public class Activator extends GenericBundleActivator {

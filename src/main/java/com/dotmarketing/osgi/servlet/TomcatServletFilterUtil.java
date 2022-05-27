@@ -111,6 +111,9 @@ public class TomcatServletFilterUtil {
 
 
   private void removeFilter(String filterName, Filter filter, boolean restart) {
+      
+
+      
     try {
       Wrapper wrapper = (Wrapper) standardContext.findChild(filterName);
       if (wrapper != null) {
@@ -131,6 +134,9 @@ public class TomcatServletFilterUtil {
     } catch (Exception e) {
       throw new DotStateException(e.getMessage(), e);
     }
+    
+    
+   
     if(restart) standardContext.filterStart();
     
   }
@@ -138,6 +144,8 @@ public class TomcatServletFilterUtil {
   void addFilter(String filterName, Filter filter, FilterOrder order, String... urlPatterns)
       throws IllegalStateException {
 
+
+      
     if (filterName == null || filterName.equals("")) {
       throw new IllegalArgumentException("filter name required");
     }
@@ -160,6 +168,7 @@ public class TomcatServletFilterUtil {
     FilterRegistration.Dynamic app = new ApplicationFilterRegistration(filterDef, standardContext);
 
     app.addMappingForUrlPatterns(null, last, urlPatterns);
+    
     standardContext.filterStart();
 
 

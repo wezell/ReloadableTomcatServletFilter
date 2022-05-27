@@ -10,10 +10,10 @@ repositories {
 }
 
 dependencies {
-    compile('com.dotcms:dotcms:5.2.0')
-    compile 'org.apache.tomcat:tomcat-catalina:8.5.24'
-    compile "javax.servlet:javax.servlet-api:3.0.1"
-    compile 'org.apache.tomcat:tomcat-catalina:8.0.18'
+    compile('com.dotcms:dotcms:22.03')
+    compile 'org.apache.tomcat:tomcat-catalina:9.0.60'
+    compile "javax.servlet:javax.servlet-api:4.0.0"
+
 }
 
 import java.util.jar.*
@@ -27,7 +27,7 @@ jar {
                 'Bundle-Vendor': 'dotCMS',
                 'Bundle-Description': 'dotCMS - Osgi Servlet example',
                 'Bundle-DocURL': 'https://dotcms.com/',
-                'Bundle-Activator': 'com.dotmarketing.osgi.servlet.Activator',
+                'Bundle-Activator': '${classes;IMPLEMENTS;org.osgi.framework.BundleActivator}',
                 'Import-Package': '*;version=0'
         )
     }
@@ -101,5 +101,5 @@ task fragmentJar(type: Jar) {
 fragmentJar.dependsOn 'readManifesttAttributes'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.2'
+    gradleVersion = '4.10.2'
 }

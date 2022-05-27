@@ -12,6 +12,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ApplicationContext;
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.catalina.core.ApplicationFilterRegistration;
+import org.apache.catalina.core.ApplicationServletRegistration;
 import org.apache.catalina.core.StandardContext;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
@@ -74,12 +75,17 @@ public class TomcatServletFilterUtil {
     wrapper.setName(servletName);
     standardContext.addChild(wrapper);
 
-    Dynamic dynamic = standardContext.dynamicServletAdded(wrapper);
+    
+    ServletRegistration.Dynamic registration =
+                    new ApplicationServletRegistration(wrapper, standardContext);
+    
+    
+
     for (String map : urlPatterns) {
-      dynamic.addMapping(map);
+        registration.addMapping(map);
     }
     Logger.info(this.getClass(), "Servlet added:" + servletName);
-    return dynamic;
+    return registration;
   }
 
 

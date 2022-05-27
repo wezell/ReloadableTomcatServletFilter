@@ -1,26 +1,8 @@
 Manifest-Version: 1.0
-Bundle-Description: dotCMS Osgi Servlet example
-Bundle-SymbolicName: com.dotcms.screenshot
-Bundle-ManifestVersion: 2
-Bnd-LastModified: 1482940831000
-Bundle-DocURL: https://dotcms.com
-Bundle-Vendor: dotcms
-Import-Package: com.dotcms.repackage.org.osgi.framework;version=0,com.
- dotmarketing.business;version=0,com.dotmarketing.osgi;version=0,com.d
- otmarketing.util;version=0,javax.servlet;version=0,javax.servlet.anno
- tation;version=0,javax.servlet.http;version=0,org.apache.catalina;ver
- sion=0,org.apache.catalina.core;version=0,org.apache.tomcat.util.desc
- riptor.web;version=0
-DynamicImport-Package: *
-Tool: Bnd-2.1.0.20130426-122213
-Override-Classes: com.dotmarketing.osgi.servlet.HelloWorldServlet,com.
- dotmarketing.osgi.servlet.HelloWorldFilter
-Export-Package: com.dotmarketing.osgi.servlet;version="0.1";uses:="com
- .dotcms.repackage.org.osgi.framework,com.dotmarketing.osgi,javax.serv
- let,javax.servlet.annotation,javax.servlet.http,org.apache.catalina.c
- ore"
-Bundle-Name: Osgi Servlet
-Bundle-Version: 0.1
-Bundle-Activator: com.dotmarketing.osgi.servlet.Activator
-Created-By: 1.8.0_112 (Oracle Corporation)
+Bundle-Description: dotCMS - Osgi Servlet example
+Bundle-Activator: ${classes;IMPLEMENTS;org.osgi.framework.BundleActiva
+ tor}
+Bundle-Vendor: dotCMS
+Bundle-DocURL: https://dotcms.com/
+Import-Package: *;version=0
 
